@@ -175,9 +175,8 @@ This project is for educational purposes.
 ---
 
 ## 🙌 Author
-
-Developed by **Abhishek Verma**
+....
 
 ---
 
-⭐ If you like this project, give it a star on GitHub!
+
