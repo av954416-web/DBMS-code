@@ -1,0 +1,24 @@
+blood-cancer-system/
+│
+├── backend/
+│   ├── server.js
+│   ├── db.js
+│   ├── seed.js
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── patients.js
+│   │   ├── prediction.js
+│   │
+│   └── models/
+│       ├── user.js
+│       ├── patient.js
+│
+├── frontend/
+│   ├── index.html
+│   ├── dashboard.html
+│   ├── app.js
+│   ├── style.css
+│
+├── package.json
+├── README.md
+├── .gitignore
