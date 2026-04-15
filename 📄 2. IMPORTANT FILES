@@ -1,4 +1,4 @@
-🔹 package.json
+##🔹 package.json
 {
   "name": "blood-cancer-system",
   "version": "1.0.0",
@@ -14,3 +14,101 @@
     "cors": "^2.8.5"
   }
 }
+##🔹 backend/server.js
+const express = require("express");
+const cors = require("cors");
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+require("./db");
+require("./seed");
+
+app.use("/auth", require("./routes/auth"));
+app.use("/patients", require("./routes/patients"));
+app.use("/predict", require("./routes/prediction"));
+
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});
+##🔹 backend/db.js
+const sqlite3 = require("sqlite3").verbose();
+
+const db = new sqlite3.Database("./database.db");
+
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY,
+    email TEXT,
+    password TEXT,
+    role TEXT
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS patients (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    age INTEGER,
+    gender TEXT
+  )`);
+});
+
+module.exports = db;
+##🔹 backend/seed.js (FIX LOGIN ISSUE)
+const db = require("./db");
+const bcrypt = require("bcrypt");
+
+const users = [
+  { email: "admin@registry.com", password: "password123", role: "admin" },
+  { email: "doctor@registry.com", password: "password123", role: "doctor" },
+  { email: "researcher@registry.com", password: "password123", role: "researcher" }
+];
+
+users.forEach(async (user) => {
+  const hashed = await bcrypt.hash(user.password, 10);
+  db.run(
+    `INSERT OR IGNORE INTO users (email, password, role) VALUES (?, ?, ?)`,
+    [user.email, hashed, user.role]
+  );
+});
+##🔹 backend/routes/auth.js
+const express = require("express");
+const router = express.Router();
+const db = require("../db");
+const bcrypt = require("bcrypt");
+
+router.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  db.get("SELECT * FROM users WHERE email = ?", [email], async (err, user) => {
+    if (!user) return res.status(400).send("User not found");
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(400).send("Wrong password");
+
+    res.send({ message: "Login success", user });
+  });
+});
+
+module.exports = router;
+##🔹 backend/routes/prediction.js (AI MODULE)
+const express = require("express");
+const router = express.Router();
+
+router.post("/", (req, res) => {
+  const { wbc, platelets } = req.body;
+
+  let result;
+
+  if (wbc > 10000 && platelets < 150000) {
+    result = "High Risk";
+  } else if (wbc > 8000 || platelets < 200000) {
+    result = "Medium Risk";
+  } else {
+    result = "Low Risk";
+  }
+
+  res.send({ prediction: result });
+});
+
+module.exports = router;
