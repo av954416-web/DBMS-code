@@ -1,4 +1,5 @@
-# 🩸 Blood Cancer Management System 
+# 🩸 Blood Cancer & centralized database.
+
 
 A full-stack web application designed to manage and analyze blood cancer patient data. This system helps hospitals and researchers track diagnosis, treatment, survival, and cost data in a centralized database.
 
